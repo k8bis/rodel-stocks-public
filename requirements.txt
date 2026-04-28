@@ -1,0 +1,6 @@
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+PyJWT==2.9.0
+mysql-connector-python==9.1.0
+requests==2.32.3
+PyMySQL==1.1.1

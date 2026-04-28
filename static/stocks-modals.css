@@ -1,0 +1,120 @@
+.rs-modal-open {
+  overflow: hidden;
+}
+
+.rs-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 200;
+}
+
+.rs-modal {
+  width: 100%;
+  max-height: calc(100vh - 40px);
+  overflow: auto;
+  background: #fff;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.24);
+  display: flex;
+  flex-direction: column;
+}
+
+.rs-modal-md {
+  max-width: 720px;
+}
+
+.rs-modal-lg {
+  max-width: 980px;
+}
+
+.rs-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 1;
+}
+
+.rs-modal-head h3 {
+  margin: 0;
+}
+
+.rs-modal-close {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 20px;
+  color: var(--muted);
+}
+
+.rs-modal-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Footer homologado para TODOS los modales */
+.rs-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+  flex-wrap: nowrap;
+}
+
+/* Si por alguna razón hay botones dentro del body sin wrapper,
+   evitamos que se "apunten" verticalmente */
+.rs-modal-body > .rs-btn,
+.rs-modal-body > button {
+  align-self: flex-start;
+}
+
+/* Ajuste opcional para que los botones del footer no se estiren */
+.rs-modal-actions .rs-btn,
+.rs-modal-actions button {
+  width: auto;
+  min-width: 120px;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .rs-modal-backdrop {
+    padding: 12px;
+  }
+
+  .rs-modal {
+    max-height: calc(100vh - 24px);
+    border-radius: 14px;
+  }
+
+  .rs-modal-head {
+    padding: 16px;
+  }
+
+  .rs-modal-body {
+    padding: 16px;
+  }
+
+  .rs-modal-actions {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .rs-modal-actions .rs-btn,
+  .rs-modal-actions button {
+    min-width: 110px;
+  }
+}

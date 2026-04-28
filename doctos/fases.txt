@@ -1,0 +1,20 @@
+ok FASE INV-2B — Backend base de Rodel-Stocks
+	Objetivo: levantar la app externa rodel-stocks con backend funcional mínimo sobre stocks_db.
+ok FASE INV-2C — UI mínima operativa de Rodel-Stocks
+	Objetivo: habilitar una interfaz mínima usable para operar inventario base dentro de rodel-stocks.
+FASE INV-3A — POS v2 backend: adaptación al nuevo modelo
+	Objetivo: ajustar el backend de POS para consumir correctamente el esquema POS v2 mínimo ya migrado.
+FASE INV-3B — POS v2 frontend: soporte funcional base
+	Objetivo: adaptar la UI de POS para operar con productos, snapshots, cancelación y configuración base de POS v2.
+FASE INV-4A — Integración POS → Stocks (aplicación de inventario)
+	Objetivo: hacer que una venta en POS aplique inventario en rodel-stocks vía API de forma transaccional e idempotente.
+FASE INV-4B — Integración POS → Stocks (cancelación / reversa)
+	Objetivo: permitir que una cancelación de venta en POS revierta inventario en rodel-stocks vía API, sin borrar historial.
+FASE INV-5A — Tickets / impresión configurable en POS
+	Objetivo: habilitar tickets configurables por cliente usando pos_client_settings y snapshots históricos.
+FASE INV-5B — Endurecimiento operativo POS + Stocks
+	Objetivo: estabilizar errores, idempotencia, trazabilidad, validaciones y compatibilidad operativa entre ambos dominios.
+FASE INV-6 — Catálogo / permisos / suscripciones para Rodel-Stocks
+	Objetivo: cerrar la integración administrativa completa de rodel-stocks dentro del ecosistema RodelSoft (catálogo, acceso, permisos, suscripción).
+FASE INV-7 — Cierre funcional del ciclo Inventario + POS v2
+	Objetivo: consolidar el ciclo completo POS v2 + Stocks v1 como base estable antes de nuevas expansiones.

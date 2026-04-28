@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rodel-Stocks</title>
+  <link rel="stylesheet" href="__APP_BASE_PATH__/static/shared-shell.css?v=20260410-6" />
+  <link rel="stylesheet" href="__APP_BASE_PATH__/static/stocks.css?v=20260410-6" />
+  <link rel="stylesheet" href="__APP_BASE_PATH__/static/stocks-tables.css?v=20260410-6" />
+  <link rel="stylesheet" href="__APP_BASE_PATH__/static/stocks-filters.css?v=20260410-6" />
+  <link rel="stylesheet" href="__APP_BASE_PATH__/static/stocks-modals.css?v=20260410-6" />
+</head>
+<body>
+  <div class="rs-app-shell">
+    <header class="rs-shell-header rs-shell-header-app">
+      <div class="rs-shell-left">
+        <div class="rs-shell-logo-box">RS</div>
+        <div class="rs-shell-brand">
+          <div class="rs-shell-title">Rodel-Stocks</div>
+          <div class="rs-shell-subtitle"></div>
+        </div>
+      </div>
+
+      <div class="rs-shell-right">
+        <div class="rs-user-menu">
+          <button id="userMenuBtn" class="rs-user-trigger" type="button">
+            👤 __USER__
+          </button>
+
+          <div id="userDropdown" class="rs-user-dropdown">
+            <button id="btnReload" type="button" class="rs-user-dropdown-item">
+              Recargar datos
+            </button>
+            <div class="rs-user-dropdown-divider"></div>
+            <button id="btnApps" type="button" class="rs-user-dropdown-item">
+              Volver a apps
+            </button>
+            <button id="btnLogout" type="button" class="rs-user-dropdown-item rs-user-dropdown-item-danger">
+              Cerrar sesión
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="rs-main">
+      <div class="container">
+        <section class="card hero-card">
+          <div class="hero-head hero-head-single">
+            <div class="hero-title-block">
+              <h1 id="heroClientName">__CLIENT_NAME__</h1>
+              <p id="heroClientSubtitle"></p>
+            </div>
+          </div>
+
+          <div id="status" class="status">Cargando datos...</div>
+        </section>
+
+        <section class="summary-grid" id="summaryGrid">
+          <button type="button" class="summary-card summary-card-action" id="summaryCardCategories" data-summary-action="categories">
+            <div class="summary-label">Categorías activas</div>
+            <div class="summary-value" id="summaryCategories">-</div>
+          </button>
+
+          <button type="button" class="summary-card summary-card-action" id="summaryCardItemsActive" data-summary-action="items_active">
+            <div class="summary-label">Items activos</div>
+            <div class="summary-value" id="summaryItems">-</div>
+          </button>
+
+          <button type="button" class="summary-card summary-card-action" id="summaryCardTracked" data-summary-action="items_tracked">
+            <div class="summary-label">Items con inventario</div>
+            <div class="summary-value" id="summaryTracked">-</div>
+          </button>
+
+          <button type="button" class="summary-card summary-card-action" id="summaryCardBalances" data-summary-action="balances">
+            <div class="summary-label">Stock total</div>
+            <div class="summary-value" id="summaryOnHand">-</div>
+          </button>
+
+          <button type="button" class="summary-card summary-card-action warning" id="summaryCardLow" data-summary-action="items_low">
+            <div class="summary-label">Bajo mínimo</div>
+            <div class="summary-value" id="summaryLow">-</div>
+          </button>
+        </section>
+
+        <section class="card workspace-card">
+          <div class="tabs-bar" id="mainTabs">
+            <button type="button" class="tab-btn active" data-tab="categories">Categorías</button>
+            <button type="button" class="tab-btn" data-tab="items">Items</button>
+            <button type="button" class="tab-btn" data-tab="balances">Balances</button>
+            <button type="button" class="tab-btn" data-tab="movements">Kardex</button>
+          </div>
+
+          <!-- TAB CATEGORÍAS -->
+          <section class="tab-panel active" id="tabPanelCategories" data-panel="categories">
+            <div class="section-head">
+              <h2>Categorías</h2>
+              <div class="section-head-actions">
+                <button id="btnOpenCategoryModal" type="button" class="rs-btn rs-btn-primary">Nueva categoría</button>
+              </div>
+            </div>
+
+            <div class="filters-bar">
+              <div class="filter-field filter-grow">
+                <label for="filterCategoriesText">Buscar</label>
+                <input id="filterCategoriesText" type="text" placeholder="Nombre o descripción..." />
+              </div>
+            </div>
+
+            <div id="categoriesEmpty" class="empty-state">Sin categorías para este cliente.</div>
+            <div id="categoriesList" class="list-grid"></div>
+          </section>
+
+          <!-- TAB ITEMS -->
+          <section class="tab-panel" id="tabPanelItems" data-panel="items">
+            <div class="section-head">
+              <h2>Items</h2>
+              <div class="section-head-actions">
+                <button id="btnOpenItemModal" type="button" class="rs-btn rs-btn-primary">Nuevo item</button>
+              </div>
+            </div>
+
+            <div class="filters-bar filters-bar-5">
+              <div class="filter-field filter-grow">
+                <label for="filterItemsText">Buscar</label>
+                <input id="filterItemsText" type="text" placeholder="Nombre, SKU, marca, modelo..." />
+              </div>
+
+              <div class="filter-field">
+                <label for="filterItemsCategory">Categoría</label>
+                <select id="filterItemsCategory">
+                  <option value="">Todas</option>
+                </select>
+              </div>
+
+              <div class="filter-field">
+                <label for="filterItemsActive">Estado</label>
+                <select id="filterItemsActive">
+                  <option value="">Todos</option>
+                  <option value="1">Activos</option>
+                  <option value="0">Inactivos</option>
+                </select>
+              </div>
+
+              <div class="filter-field">
+                <label for="filterItemsTracked">Con inventario</label>
+                <select id="filterItemsTracked">
+                  <option value="">Todos</option>
+                  <option value="1">Sí</option>
+                  <option value="0">No</option>
+                </select>
+              </div>
+
+              <div class="filter-field">
+                <label for="filterItemsLow">Bajo mínimo</label>
+                <select id="filterItemsLow">
+                  <option value="">Todos</option>
+                  <option value="1">Sí</option>
+                  <option value="0">No</option>
+                </select>
+              </div>
+            </div>
+
+            <div id="itemsEmpty" class="empty-state">Sin items para este cliente.</div>
+            <div class="table-wrap">
+              <table class="stocks-table">
+                <thead>
+                  <tr>
+                    <th>Item</th>
+                    <th>Tipo</th>
+                    <th>Categoría</th>
+                    <th>SKU</th>
+                    <th>Inventario</th>
+                    <th>Mínimo</th>
+                    <th>Activo</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="itemsTbody"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- TAB BALANCES -->
+          <section class="tab-panel" id="tabPanelBalances" data-panel="balances">
+            <div class="section-head">
+              <h2>Balances</h2>
+              <div class="section-head-actions">
+                <button id="btnOpenBalanceModal" type="button" class="rs-btn rs-btn-primary">Aplicar balance</button>
+              </div>
+            </div>
+
+            <div class="filters-bar">
+              <div class="filter-field filter-grow">
+                <label for="filterBalancesText">Buscar</label>
+                <input id="filterBalancesText" type="text" placeholder="Item o SKU..." />
+              </div>
+            </div>
+
+            <div id="balancesEmpty" class="empty-state">Sin balances para este cliente.</div>
+            <div class="table-wrap">
+              <table class="stocks-table">
+                <thead>
+                  <tr>
+                    <th>Item</th>
+                    <th>SKU</th>
+                    <th>On Hand</th>
+                    <th>Reservado</th>
+                    <th>Actualizado</th>
+                  </tr>
+                </thead>
+                <tbody id="balancesTbody"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- TAB KARDEX -->
+          <section class="tab-panel" id="tabPanelMovements" data-panel="movements">
+            <div class="section-head">
+              <h2>Kardex</h2>
+              <div class="section-head-actions">
+                <button id="btnOpenMovementModal" type="button" class="rs-btn rs-btn-primary">Registrar movimiento</button>
+              </div>
+            </div>
+
+            <div class="filters-bar filters-bar-2">
+              <div class="filter-field filter-grow">
+                <label for="filterMovementsText">Buscar</label>
+                <input id="filterMovementsText" type="text" placeholder="Item, SKU, notas o usuario..." />
+              </div>
+
+              <div class="filter-field">
+                <label for="filterMovementsType">Tipo</label>
+                <select id="filterMovementsType">
+                  <option value="">Todos</option>
+                  <option value="manual_entry">manual_entry</option>
+                  <option value="manual_exit">manual_exit</option>
+                  <option value="adjustment_plus">adjustment_plus</option>
+                  <option value="adjustment_minus">adjustment_minus</option>
+                  <option value="balance_set">balance_set</option>
+                </select>
+              </div>
+            </div>
+
+            <div id="movementsEmpty" class="empty-state">Sin movimientos para este cliente.</div>
+            <div class="table-wrap">
+              <table class="stocks-table">
+                <thead>
+                  <tr>
+                    <th>Fecha</th>
+                    <th>Item</th>
+                    <th>SKU</th>
+                    <th>Tipo</th>
+                    <th>Cantidad</th>
+                    <th>Usuario</th>
+                    <th>Notas</th>
+                  </tr>
+                </thead>
+                <tbody id="movementsTbody"></tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+      </div>
+    </main>
+
+    <footer class="rs-shell-footer">
+      <div class="rs-shell-footer-inner">
+        <span>RodelSoft Platform</span>
+        <span>Rodel-Stocks · INV-2C.3</span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- MODAL CATEGORÍA -->
+  <div id="categoryModal" class="rs-modal-backdrop hidden">
+    <div class="rs-modal rs-modal-md">
+      <div class="rs-modal-head">
+        <h3 id="categoryModalTitle">Nueva categoría</h3>
+        <button id="btnCloseCategoryModal" type="button" class="rs-modal-close">✕</button>
+      </div>
+      <div class="rs-modal-body">
+        <form id="categoryForm" class="form-grid">
+          <input id="catEditId" type="hidden" />
+
+          <div class="field">
+            <label for="catName">Nombre *</label>
+            <input id="catName" type="text" maxlength="150" required />
+          </div>
+
+          <div class="field field-span-2">
+            <label for="catDescription">Descripción</label>
+            <textarea id="catDescription" rows="3" maxlength="1000"></textarea>
+          </div>
+
+          <div class="field field-span-2">
+            <label class="check-label">
+              <input id="catIsActive" type="checkbox" checked />
+              Activa
+            </label>
+          </div>
+
+          <div class="rs-modal-actions field-span-2">
+            <button id="btnCancelCategoryEdit" type="button" class="rs-btn rs-btn-secondary">Cancelar</button>
+            <button id="btnSaveCategory" type="submit" class="rs-btn rs-btn-primary">Guardar categoría</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL ITEM -->
+  <div id="itemModal" class="rs-modal-backdrop hidden">
+    <div class="rs-modal rs-modal-lg">
+      <div class="rs-modal-head">
+        <h3 id="itemModalTitle">Nuevo item</h3>
+        <button id="btnCloseItemModal" type="button" class="rs-modal-close">✕</button>
+      </div>
+      <div class="rs-modal-body">
+        <form id="itemForm" class="form-grid">
+          <input id="itemEditId" type="hidden" />
+
+          <div class="field">
+            <label for="itemName">Nombre *</label>
+            <input id="itemName" type="text" maxlength="200" required />
+          </div>
+
+          <div class="field">
+            <label for="itemType">Tipo *</label>
+            <select id="itemType">
+              <option value="physical">physical</option>
+              <option value="service">service</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="itemCategory">Categoría</label>
+            <select id="itemCategory">
+              <option value="">Sin categoría</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="itemSku">SKU</label>
+            <input id="itemSku" type="text" maxlength="50" />
+          </div>
+
+          <div class="field">
+            <label for="itemBarcode">Código de barras</label>
+            <input id="itemBarcode" type="text" maxlength="50" />
+          </div>
+
+          <div class="field">
+            <label for="itemBrand">Marca</label>
+            <input id="itemBrand" type="text" maxlength="100" />
+          </div>
+
+          <div class="field">
+            <label for="itemModel">Modelo</label>
+            <input id="itemModel" type="text" maxlength="100" />
+          </div>
+
+          <div class="field">
+            <label for="itemColor">Color</label>
+            <input id="itemColor" type="text" maxlength="50" />
+          </div>
+
+          <div class="field">
+            <label for="itemUnit">Unidad</label>
+            <input id="itemUnit" type="text" maxlength="30" value="piece" />
+          </div>
+
+          <div class="field">
+            <label for="itemMinStock">Stock mínimo</label>
+            <input id="itemMinStock" type="number" step="0.001" min="0" value="0" />
+          </div>
+
+          <div class="field field-span-2">
+            <label for="itemDescription">Descripción</label>
+            <textarea id="itemDescription" rows="3" maxlength="1000"></textarea>
+          </div>
+
+          <div class="checks-grid field-span-2">
+            <label class="check-label">
+              <input id="itemTrackInventory" type="checkbox" checked />
+              Lleva inventario
+            </label>
+            <label class="check-label">
+              <input id="itemSellable" type="checkbox" checked />
+              Vendible
+            </label>
+            <label class="check-label">
+              <input id="itemPurchasable" type="checkbox" checked />
+              Comprable
+            </label>
+            <label class="check-label">
+              <input id="itemIsActive" type="checkbox" checked />
+              Activo
+            </label>
+          </div>
+
+          <div class="rs-modal-actions field-span-2">
+            <button id="btnCancelItemEdit" type="button" class="rs-btn rs-btn-secondary">Cancelar</button>
+            <button id="btnSaveItem" type="submit" class="rs-btn rs-btn-primary">Guardar item</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL BALANCE -->
+  <div id="balanceModal" class="rs-modal-backdrop hidden">
+    <div class="rs-modal rs-modal-md">
+      <div class="rs-modal-head">
+        <h3>Ajuste inicial / balance manual</h3>
+        <button id="btnCloseBalanceModal" type="button" class="rs-modal-close">✕</button>
+      </div>
+      <div class="rs-modal-body">
+        <form id="balanceForm" class="form-grid">
+          <div class="field field-span-2">
+            <label for="balanceItem">Item *</label>
+            <select id="balanceItem" required></select>
+          </div>
+
+          <div class="field">
+            <label for="balanceOnHand">On hand *</label>
+            <input id="balanceOnHand" type="number" step="0.001" min="0" value="0" required />
+          </div>
+
+          <div class="field">
+            <label for="balanceReserved">Reservado</label>
+            <input id="balanceReserved" type="number" step="0.001" min="0" value="0" />
+          </div>
+
+          <div class="field field-span-2">
+            <label for="balanceNotes">Notas</label>
+            <input id="balanceNotes" type="text" maxlength="255" />
+          </div>
+
+          <div class="rs-modal-actions field-span-2">
+            <button id="btnCancelBalance" type="button" class="rs-btn rs-btn-secondary">Cancelar</button>
+            <button id="btnSaveBalance" type="submit" class="rs-btn rs-btn-primary">Aplicar balance</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL MOVIMIENTO -->
+  <div id="movementModal" class="rs-modal-backdrop hidden">
+    <div class="rs-modal rs-modal-md">
+      <div class="rs-modal-head">
+        <h3>Movimiento manual</h3>
+        <button id="btnCloseMovementModal" type="button" class="rs-modal-close">✕</button>
+      </div>
+      <div class="rs-modal-body">
+        <form id="movementForm" class="form-grid">
+          <div class="field field-span-2">
+            <label for="movementItem">Item *</label>
+            <select id="movementItem" required></select>
+          </div>
+
+          <div class="field">
+            <label for="movementType">Tipo *</label>
+            <select id="movementType">
+              <option value="manual_entry">manual_entry</option>
+              <option value="manual_exit">manual_exit</option>
+              <option value="adjustment_plus">adjustment_plus</option>
+              <option value="adjustment_minus">adjustment_minus</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="movementQty">Cantidad *</label>
+            <input id="movementQty" type="number" step="0.001" min="0.001" value="1" required />
+          </div>
+
+          <div class="field field-span-2">
+            <label for="movementNotes">Notas</label>
+            <input id="movementNotes" type="text" maxlength="255" />
+          </div>
+
+          <div class="rs-modal-actions field-span-2">
+            <button id="btnCancelMovement" type="button" class="rs-btn rs-btn-secondary">Cancelar</button>
+            <button id="btnSaveMovement" type="submit" class="rs-btn rs-btn-primary">Registrar movimiento</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.STOCKS_CONFIG = {
+      APP_BASE_PATH: "__APP_BASE_PATH__",
+      APP_MENU_URL: "__APP_MENU_URL__",
+      LOGOUT_URL: "__LOGOUT_URL__",
+      LOGIN_FALLBACK_URL: "__LOGIN_FALLBACK_URL__",
+      SESSION_CHECK_URL: "__SESSION_CHECK_URL__",
+      LOGOUT_REDIRECT_URL: "__LOGOUT_REDIRECT_URL__",
+      APP_ID: "__APP_ID__",
+      CLIENT_ID: "__CLIENT_ID__",
+      USERNAME: "__USER__",
+      CLIENT_NAME: "__CLIENT_NAME__"
+    };
+  </script>
+
+  <script src="__APP_BASE_PATH__/static/stocks-core.js?v=20260410-6"></script>
+  <script src="__APP_BASE_PATH__/static/stocks-render.js?v=20260410-6"></script>
+  <script src="__APP_BASE_PATH__/static/stocks-filters.js?v=20260410-6"></script>
+  <script src="__APP_BASE_PATH__/static/stocks-modals.js?v=20260410-6"></script>
+  <script src="__APP_BASE_PATH__/static/stocks-actions.js?v=20260410-6"></script>
+  <script src="__APP_BASE_PATH__/static/stocks.js?v=20260410-6"></script>
+</body>
+</html>

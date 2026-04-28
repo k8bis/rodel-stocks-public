@@ -1,0 +1,19 @@
+services:
+  rodel-stocks:
+    build: .
+    container_name: rodel-stocks
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "8091:8020"
+    networks:
+      rodel_stocks_net:
+        ipv4_address: 172.31.0.10
+
+networks:
+  rodel_stocks_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.31.0.0/16
