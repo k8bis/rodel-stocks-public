@@ -16,7 +16,7 @@ services:
       rodelsoft_net: {}
 
     extra_hosts:
-      - "${DOCKER_HOST_GATEWAY}"
+      - "host.docker.internal:${DOCKER_HOST_GATEWAY_IP}"
 
 networks:
   rodel_stocks_net:
