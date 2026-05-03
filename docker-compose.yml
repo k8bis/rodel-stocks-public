@@ -1,23 +1,30 @@
 services:
   rodel-stocks:
     build: .
-    container_name: rodel-stocks
+    container_name: ${CONTAINER_NAME}
     restart: unless-stopped
+
     env_file:
       - .env
+
     ports:
-      - "8091:8020"
+      - "${APP_PORT}:8020"
+
     networks:
       rodel_stocks_net:
-        ipv4_address: 172.31.0.10
-      rodelsoftadmin_rodelsoft_net:
+        ipv4_address: ${APP_IP}
+      rodelsoft_net: {}
+
+    extra_hosts:
+      - "${DOCKER_HOST_GATEWAY}"
 
 networks:
   rodel_stocks_net:
     driver: bridge
     ipam:
       config:
-        - subnet: 172.31.0.0/16
+        - subnet: ${DOCKER_SUBNET}
 
-  rodelsoftadmin_rodelsoft_net:
+  rodelsoft_net:
     external: true
+    name: ${DOCKER_EXTERNAL_NETWORK}
